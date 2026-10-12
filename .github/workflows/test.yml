@@ -1,0 +1,47 @@
+# Runs the unit tests on every pull request (and on pushes to 'main').
+#
+# To make a passing run mandatory before merging, mark the "Test" check as required in the repository settings
+# (Settings > Branches > branch protection rule / ruleset > Require status checks to pass).
+
+name: Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Setup Java
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Run tests
+        run: ./gradlew test --console=plain
+
+      - name: Upload test report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: test-report
+          path: build/reports/tests/test
