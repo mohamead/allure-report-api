@@ -1,7 +1,7 @@
 [versions]
 allure = "2.46.1"
 junit = "5.11.4"
-kotlin = "2.3.21"
+kotlin = "2.4.21"
 slf4j = "2.0.17"
 
 [libraries]
