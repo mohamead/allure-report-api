@@ -6,7 +6,7 @@ plugins {
     `maven-publish`
 }
 
-group = "no.spk.allure"
+group = "com.github.mohamead.allure"
 version = "1.0.0-SNAPSHOT"
 description = "Kotlin wrapper around Allure 2 that exposes report generation as a class library API"
 

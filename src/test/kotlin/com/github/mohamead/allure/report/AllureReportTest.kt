@@ -1,4 +1,4 @@
-package no.spk.allure.report
+package com.github.mohamead.allure.report
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir

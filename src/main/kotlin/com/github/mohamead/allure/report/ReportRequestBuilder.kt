@@ -1,4 +1,4 @@
-package no.spk.allure.report
+package com.github.mohamead.allure.report
 
 import io.qameta.allure.Extension
 import io.qameta.allure.core.Plugin

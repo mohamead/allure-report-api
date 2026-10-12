@@ -1,4 +1,4 @@
-package no.spk.allure.report
+package com.github.mohamead.allure.report
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
