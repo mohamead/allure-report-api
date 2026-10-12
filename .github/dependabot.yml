@@ -1,0 +1,20 @@
+# Dependabot configuration:
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Gradle dependencies, plugins and the Gradle wrapper (versions live in gradle/libs.versions.toml)
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      # The Allure generator and its plugins must always have the same version
+      allure:
+        patterns:
+          - "io.qameta.allure*"
+  # GitHub Actions used in .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"

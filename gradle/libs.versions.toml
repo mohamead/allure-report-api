@@ -1,0 +1,16 @@
+[versions]
+allure = "2.46.1"
+junit = "5.11.4"
+kotlin = "2.3.21"
+slf4j = "2.0.17"
+
+[libraries]
+allure-generator = { module = "io.qameta.allure:allure-generator", version.ref = "allure" }
+allure-junit-xml-plugin = { module = "io.qameta.allure.plugins:junit-xml-plugin", version.ref = "allure" }
+allure-behaviors-plugin = { module = "io.qameta.allure.plugins:behaviors-plugin", version.ref = "allure" }
+allure-packages-plugin = { module = "io.qameta.allure.plugins:packages-plugin", version.ref = "allure" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
