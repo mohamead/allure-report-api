@@ -1,6 +1,6 @@
 [versions]
 allure = "2.46.1"
-junit = "5.11.4"
+junit = "6.1.3"
 kotlin = "2.3.21"
 slf4j = "2.0.17"
 
