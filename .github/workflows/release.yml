@@ -1,0 +1,94 @@
+# Prepares a draft GitHub release when a pull request is merged into 'main'.
+#
+# Modelled on the release draft of allure-report-plugin: the draft is not publicly visible and has to be accepted
+# manually on the GitHub Releases page. Old drafts are removed first, so there is only ever one draft.
+#
+# The release is named after the Gradle 'version' (v<version>) and gets the built jars as assets, since the library
+# is not published to a Maven repository. A '-SNAPSHOT' version is marked as a pre-release.
+#
+# GitHub Actions reference: https://help.github.com/en/actions
+
+name: Release
+on:
+  pull_request:
+    types: [ closed ]
+    branches: [ main ]
+
+# Only one release at a time; a newer merge waits for the running one instead of cancelling it half way.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  releaseDraft:
+    name: Release draft
+    # A PR that is closed without being merged must not create a release
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+      # Check out the commit the merge created on 'main'
+      - name: Fetch Sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      # Set up Java environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: zulu
+          java-version: 17
+
+      # Setup Gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+
+      # Change Wrapper Permissions
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Build the jars and run the tests, so a broken merge never gets a release
+      - name: Build
+        run: ./gradlew build --console=plain
+
+      # Read the version from Gradle
+      - name: Export Properties
+        id: properties
+        shell: bash
+        run: |
+          PROPERTIES="$(./gradlew properties --console=plain -q)"
+          VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # Remove old release drafts by using the curl request for the available releases with a draft flag
+      - name: Remove Old Release Drafts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/{owner}/{repo}/releases \
+            --jq '.[] | select(.draft == true) | .id' \
+            | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{}
+
+      # Create a new release draft which is not publicly visible and requires manual acceptance
+      - name: Create Release Draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.properties.outputs.version }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          PRERELEASE=""
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then PRERELEASE="--prerelease"; fi
+
+          gh release create "v$VERSION" \
+            --draft \
+            $PRERELEASE \
+            --target "${{ github.event.pull_request.merge_commit_sha }}" \
+            --title "v$VERSION" \
+            --generate-notes \
+            --notes "Created from #$PR_NUMBER: $PR_TITLE" \
+            build/libs/*.jar

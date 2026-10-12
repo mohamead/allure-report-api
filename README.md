@@ -24,6 +24,22 @@ Extra Allure `Extension`s / `Plugin`s can be passed via `ReportOptions` or `exte
 
 Build: `./gradlew build` (Java 17+). Install locally for other projects with `./gradlew publishToMavenLocal`.
 
+## Using it in another project
+
+The library is built from GitHub by [JitPack](https://jitpack.io/#mohamead/allure-report-api):
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    // a release tag, a commit hash, or <branch>-SNAPSHOT (e.g. main-SNAPSHOT)
+    implementation("com.github.mohamead:allure-report-api:main-SNAPSHOT")
+}
+```
+
 ## Serve and open
 
 ```kotlin
