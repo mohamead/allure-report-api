@@ -6,7 +6,8 @@ plugins {
     `maven-publish`
 }
 
-group = "com.github.mohamead.allure"
+// Same group JitPack uses (com.github.<user>), so local and JitPack builds have identical coordinates
+group = "com.github.mohamead"
 version = "1.0.0-SNAPSHOT"
 description = "Kotlin wrapper around Allure 2 that exposes report generation as a class library API"
 

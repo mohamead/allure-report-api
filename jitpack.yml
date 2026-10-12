@@ -1,0 +1,4 @@
+# JitPack builds this library from GitHub on demand: https://jitpack.io/#mohamead/allure-report-api
+# The Gradle wrapper (9.x) needs at least JDK 17.
+jdk:
+  - openjdk17
